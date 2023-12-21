@@ -13,13 +13,6 @@ use core::{borrow::Borrow, cmp::Ordering};
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct MyKey(pub [u8; 6]);
 
-// This allows `&[u8; 6]` to be passed to `.get()`, not just `&MyKey`
-impl Borrow<[u8; 6]> for MyKey {
-    fn borrow(&self) -> &[u8; 6] {
-        &self.0
-    }
-}
-
 impl MyKey {
     pub const fn const_cmp(&self, rhs: &Self) -> Ordering {
         let mut i = 0;
@@ -43,6 +36,20 @@ pub const LUT: ConstSortedLut<u64, 3> = ConstSortedLut::new([
     LutEntry { key: MyKey([1u8; 6]), value: 2},
     LutEntry { key: MyKey([3u8; 6]), value: 3},
 ]);
+
+// This allows `&[u8; 6]` to be passed to `.get()`, not just `&MyKey`
+impl Borrow<[u8; 6]> for MyKey {
+    fn borrow(&self) -> &[u8; 6] {
+        &self.0
+    }
+}
+
+// This allows `&[u8]` to be passed to `.get()`, not just `&MyKey`
+impl Borrow<[u8]> for MyKey {
+    fn borrow(&self) -> &[u8] {
+        &self.0
+    }
+}
 ```
 
 ## Usage
@@ -53,9 +60,9 @@ The `const` context results in some pretty rough constraints:
 - `Ord` methods are not `const`
 - only `Copy` types can be safely moved and assigned in `const fn`s
 
-To get around this, you must define the key (new)type with a method `pub const fn const_cmp(&self, other: &Self) -> Ordering`.
+To get around these, you must define the key (new)type with a method `pub const fn const_cmp(&self, other: &Self) -> Ordering`.
 
-The key type must impl `Copy`.
+The key type must impl `Copy`, and no generics or lifetimes are allowed in the key type.
 
 You can then call `impl_const_sorted_lut!(MyNewType)`. This expands to the following code:
 
@@ -78,19 +85,26 @@ pub struct LutEntry<V> {
 impl<V: Copy, const N: usize> ConstSortedLut<V, N> {
     pub const fn new(mut entries: [LutEntry<V>; N]) -> Self {
         // ...
-        // compile-time sorting and creation code here
+        // generated compile-time sorting and creation code
         // ...
+    }
+
+    pub fn get<Q: Ord + ?Sized>(&self, key: &Q) -> Option<&V>
+    where
+        MyNewType: core::borrow::Borrow<Q>,
+    {
+        use core::borrow::Borrow;
+        let i = self.keys.binary_search_by(|p| p.borrow().cmp(key)).ok()?;
+        Some(&self.values[i])
     }
 }
 ```
 
-You can then initialize LUTs with `ConstSortedLut::new()`.
-
-No generics or lifetimes are allowed in the key type.
+You can then create LUTs with `ConstSortedLut::new()`.
 
 ## Features
 
-The following feature-flags implement `ConstSortedLut` for the corresponding primitive type in a `const_<primitive_type>` module:
+The following feature-flags implement `ConstSortedLut` for the corresponding primitive type in the respective `const_<primitive_type>` module:
 
 - `str` - for `&'static str`
 - `char`
@@ -107,13 +121,13 @@ The following feature-flags implement `ConstSortedLut` for the corresponding pri
 - `isize`
 - `i128`
 
-The newtypes are all simple newtypes named `ConstCmp`.
+The key newtypes are all simple newtypes named `ConstCmp`.
 
 No features are enabled by default.
 
 ## Details
 
-- the sorting uses bubble-sort due to the restrictions on `const fn`s. This will result in long compile times for large LUTs that are not already sorted.
+- the sorting uses bubble-sort due to the restrictions on `const fn`s. This will result in long compile times for large LUTs that are not already sorted, but shorter times for LUTs that are already hand-sorted
 - because `as_mut_ptr()` is not `const` in stable yet, `ConstSortedLut::new()` uses the following UB: `unsafe { core::mem::MaybeUninit::uninit().assume_init() }` to achieve a struct-of-arrays layout
 
 ## Testing

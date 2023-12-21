@@ -129,7 +129,7 @@ macro_rules! impl_const_sorted_lut {
     };
 }
 
-#[allow(unused_macros)] // cargo check bug?
+#[allow(unused_macros)] // but this is used - cargo check bug?
 macro_rules! impl_prim_newtype_const_sorted_lut {
     ($primtype: ty) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -157,5 +157,5 @@ macro_rules! impl_prim_newtype_const_sorted_lut {
     };
 }
 
-#[allow(unused_imports)] // cargo check bug?
+#[allow(unused_imports)] // but this is used - cargo check bug?
 pub(crate) use impl_prim_newtype_const_sorted_lut;

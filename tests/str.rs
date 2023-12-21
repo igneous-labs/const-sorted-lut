@@ -68,7 +68,7 @@ fn fn_pointer_val() {
         },
     ]);
 
-    // str arg not used by function
+    // str arg not used by function, so just pass K2 as arg
     assert_eq!(LUT.get(K0).unwrap()(K2), f0(K2));
     assert_eq!(LUT.get(K1).unwrap()(K2), f1(K2));
     assert_eq!(LUT.get(K2).unwrap()(K2), f2(K2));
