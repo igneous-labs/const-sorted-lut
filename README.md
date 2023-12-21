@@ -1,6 +1,6 @@
 # const-sorted-lut
 
-Compile-time sorted `const` lookup tables that use binary search for lookup.
+Compile-time sorted `const` binary-search lookup tables.
 
 ## Example
 
@@ -93,12 +93,19 @@ No generics or lifetimes are allowed in the key type.
 The following feature-flags implement `ConstSortedLut` for the corresponding primitive type in a `const_<primitive_type>` module:
 
 - `str` - for `&'static str`
+- `char`
 - `u8`
 - `u16`
 - `u32`
 - `u64`
 - `usize`
 - `u128`
+- `i8`
+- `i16`
+- `i32`
+- `i64`
+- `isize`
+- `i128`
 
 The newtypes are all simple newtypes named `ConstCmp`.
 
