@@ -27,7 +27,7 @@ impl ConstCmp {
 
 impl Borrow<str> for ConstCmp {
     fn borrow(&self) -> &str {
-        &self.0
+        self.0
     }
 }
 
