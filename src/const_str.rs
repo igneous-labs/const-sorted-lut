@@ -21,6 +21,10 @@ impl ConstCmp {
             }
             i += 1;
         }
+        // l.len() < r.len()
+        if i != r.len() {
+            return Ordering::Less;
+        }
         Ordering::Equal
     }
 }

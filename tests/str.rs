@@ -2,7 +2,7 @@ use const_sorted_lut::const_str::{ConstCmp, ConstSortedLut, LutEntry};
 
 #[test]
 fn u8_val() {
-    const K0: &str = "d";
+    const K0: &str = "a";
     const K1: &str = "abc";
     const K2: &str = "~!";
     const K3: &str = "efghijk";
