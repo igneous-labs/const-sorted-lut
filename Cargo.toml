@@ -1,0 +1,40 @@
+[package]
+name = "const-sorted-lut"
+version = "1.0.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+include = ["/src", "/tests", "/README.md"]
+
+[features]
+default = []
+all = [
+    "str",
+    "char",
+    "u8",
+    "u16",
+    "u32",
+    "u64",
+    "usize",
+    "u128",
+    "i8",
+    "i16",
+    "i32",
+    "i64",
+    "isize",
+    "i128",
+]
+str = []
+char = []
+u8 = []
+u16 = []
+u32 = []
+u64 = []
+usize = []
+u128 = []
+i8 = []
+i16 = []
+i32 = []
+i64 = []
+isize = []
+i128 = []
