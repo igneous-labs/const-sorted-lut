@@ -1,4 +1,4 @@
-use const_sorted_lut::const_str::{ConstCmp, ConstSortedLut, LutEntry};
+use const_sorted_lut::const_cmp_str::{ConstCmp, ConstSortedLut, LutEntry};
 
 #[test]
 fn u8_val() {
@@ -32,6 +32,9 @@ fn u8_val() {
 
     for (k, v) in [(K0, V0), (K1, V1), (K2, V2), (K3, V3)] {
         assert_eq!(*LUT.get(k).unwrap(), v);
+    }
+    for (k, v) in [(K0, V0), (K1, V1), (K2, V2), (K3, V3)] {
+        assert_eq!(*LUT.get_const_cmp(&ConstCmp(k)).unwrap(), v);
     }
 }
 
@@ -72,4 +75,8 @@ fn fn_pointer_val() {
     assert_eq!(LUT.get(K0).unwrap()(K2), f0(K2));
     assert_eq!(LUT.get(K1).unwrap()(K2), f1(K2));
     assert_eq!(LUT.get(K2).unwrap()(K2), f2(K2));
+
+    assert_eq!(LUT.get_const_cmp(&ConstCmp(K0)).unwrap()(K2), f0(K2));
+    assert_eq!(LUT.get_const_cmp(&ConstCmp(K1)).unwrap()(K2), f1(K2));
+    assert_eq!(LUT.get_const_cmp(&ConstCmp(K2)).unwrap()(K2), f2(K2));
 }

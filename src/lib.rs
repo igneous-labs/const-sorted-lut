@@ -3,59 +3,59 @@
 
 #[cfg(feature = "char")]
 #[cfg_attr(docsrs, doc(cfg(feature = "char")))]
-pub mod const_char;
+pub mod const_cmp_char;
 
 #[cfg(feature = "str")]
 #[cfg_attr(docsrs, doc(cfg(feature = "str")))]
-pub mod const_str;
+pub mod const_cmp_str;
 
 #[cfg(feature = "u8")]
 #[cfg_attr(docsrs, doc(cfg(feature = "u8")))]
-pub mod const_u8;
+pub mod const_cmp_u8;
 
 #[cfg(feature = "u16")]
 #[cfg_attr(docsrs, doc(cfg(feature = "u16")))]
-pub mod const_u16;
+pub mod const_cmp_u16;
 
 #[cfg(feature = "u32")]
 #[cfg_attr(docsrs, doc(cfg(feature = "u32")))]
-pub mod const_u32;
+pub mod const_cmp_u32;
 
 #[cfg(feature = "u64")]
 #[cfg_attr(docsrs, doc(cfg(feature = "u64")))]
-pub mod const_u64;
+pub mod const_cmp_u64;
 
 #[cfg(feature = "usize")]
 #[cfg_attr(docsrs, doc(cfg(feature = "usize")))]
-pub mod const_usize;
+pub mod const_cmp_usize;
 
 #[cfg(feature = "u128")]
 #[cfg_attr(docsrs, doc(cfg(feature = "u128")))]
-pub mod const_u128;
+pub mod const_cmp_u128;
 
 #[cfg(feature = "i8")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
-pub mod const_i8;
+pub mod const_cmp_i8;
 
 #[cfg(feature = "i16")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i16")))]
-pub mod const_i16;
+pub mod const_cmp_i16;
 
 #[cfg(feature = "i32")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i32")))]
-pub mod const_i32;
+pub mod const_cmp_i32;
 
 #[cfg(feature = "i64")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i64")))]
-pub mod const_i64;
+pub mod const_cmp_i64;
 
 #[cfg(feature = "isize")]
 #[cfg_attr(docsrs, doc(cfg(feature = "isize")))]
-pub mod const_isize;
+pub mod const_cmp_isize;
 
 #[cfg(feature = "i128")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i128")))]
-pub mod const_i128;
+pub mod const_cmp_i128;
 
 #[macro_export]
 macro_rules! impl_const_sorted_lut {
@@ -114,6 +114,11 @@ macro_rules! impl_const_sorted_lut {
                     i += 1;
                 }
                 res
+            }
+
+            pub fn get_const_cmp(&self, key: &$k) -> Option<&V> {
+                let i = self.keys.binary_search_by(|p| p.const_cmp(key)).ok()?;
+                Some(&self.values[i])
             }
 
             pub fn get<Q: Ord + ?Sized>(&self, key: &Q) -> Option<&V>

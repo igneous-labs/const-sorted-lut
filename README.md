@@ -32,9 +32,9 @@ impl MyKey {
 impl_const_sorted_lut!(MyKey);
 
 pub const LUT: ConstSortedLut<u64, 3> = ConstSortedLut::new([
-    LutEntry { key: MyKey([2u8; 6]), value: 1},
-    LutEntry { key: MyKey([1u8; 6]), value: 2},
-    LutEntry { key: MyKey([3u8; 6]), value: 3},
+    LutEntry { key: MyKey([2; 6]), value: 1u64},
+    LutEntry { key: MyKey([1; 6]), value: 2u64},
+    LutEntry { key: MyKey([3; 6]), value: 3u64},
 ]);
 
 // This allows `&[u8; 6]` to be passed to `.get()`, not just `&MyKey`
@@ -50,6 +50,10 @@ impl Borrow<[u8]> for MyKey {
         &self.0
     }
 }
+
+assert_eq!(*LUT.get(&[2; 6]).unwrap(), 1);
+assert_eq!(*LUT.get_const_cmp(&MyKey([1; 6])).unwrap(), 2);
+assert!(LUT.get(&[4; 6]).is_none());
 ```
 
 ## Usage
@@ -89,6 +93,11 @@ impl<V: Copy, const N: usize> ConstSortedLut<V, N> {
         // ...
     }
 
+    pub fn get_const_cmp(&self, key: &$k) -> Option<&V> {
+        let i = self.keys.binary_search_by(|p| p.const_cmp(key)).ok()?;
+        Some(&self.values[i])
+    }
+
     pub fn get<Q: Ord + ?Sized>(&self, key: &Q) -> Option<&V>
     where
         MyNewType: core::borrow::Borrow<Q>,
@@ -104,7 +113,7 @@ You can then create LUTs with `ConstSortedLut::new()`.
 
 ## Features
 
-The following feature-flags implement `ConstSortedLut` for the corresponding primitive type in the respective `const_<primitive_type>` module:
+The following feature-flags implement `ConstSortedLut` for the corresponding primitive type in the respective `const_cmp_<primitive_type>` module:
 
 - `str` - for `&'static str`
 - `char`
