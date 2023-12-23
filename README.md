@@ -53,7 +53,7 @@ impl Borrow<[u8]> for MyKey {
 
 assert_eq!(*LUT.get(&[2; 6]).unwrap(), 1);
 assert_eq!(*LUT.get_const_cmp(&MyKey([1; 6])).unwrap(), 2);
-assert!(LUT.get(&[4; 6]).is_none());
+assert!(LUT.get([4u8; 8].as_ref()).is_none());
 ```
 
 ## Usage
